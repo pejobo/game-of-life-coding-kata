@@ -44,7 +44,7 @@ public class Point2D implements Coordinate<Point2D> {
 
 
     @Override
-    public Stream<Coordinate<Point2D>> getNeighbours() {
+    public Stream<Point2D> getNeighbours() {
         return Stream
                 .of(NEIGHBOUR_HOODS)
                 .map(n -> n.getNeighbourFrom(_x, _y));
