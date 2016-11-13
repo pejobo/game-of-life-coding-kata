@@ -111,6 +111,7 @@ public class GameOfLifeTest {
                 .isEqualTo(-1);
     }
 
+
     private void glider(int ticCount) {
         final String glider =
                 " # \n" +
@@ -174,4 +175,12 @@ public class GameOfLifeTest {
         stressTest(3_000);
     }
 
+
+    @Test
+    public void calculate_period() {
+        Point2D.parse("##########").forEach(_game::setAlive);
+        _game.tic(50);
+        assertThat(_game.calculatePeriod(50))
+                .isEqualTo(15);
+    }
 }
