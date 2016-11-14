@@ -58,7 +58,7 @@ public class Point2D implements Coordinate<Point2D> {
 
     @Override
     public int hashCode() {
-        return _x ^ _y;
+        return _x ^ (_y >>> 16);
     }
 
 
