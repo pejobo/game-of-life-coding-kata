@@ -97,8 +97,10 @@ public class GameOfLife<T extends Coordinate<T>> {
 
     public void tic() {
         // reuse last generation
-        Set<Coordinate<T>> newBoard = _previousBoard;
+        final Set<Coordinate<T>> newBoard = _previousBoard;
         newBoard.clear();
+        // already checked (dead) cells
+        final Set<Coordinate<T>> alreadyChecked = new HashSet<>(Math.max(16, _previousBoard.size() * 4));
         // surviving cells
         getLivingCells()
                 .filter(this::willBeAliveInNextGeneration)
@@ -108,6 +110,7 @@ public class GameOfLife<T extends Coordinate<T>> {
                 .flatMap(Coordinate::getNeighbours)
                 .filter(this::isDead)
                 .filter(coordinate -> ! newBoard.contains(coordinate)) // prevent neighbour calculation for cells where is already known that they come to life
+                .filter(alreadyChecked::add) // prevent duplicate checking
                 .filter(c -> _rules.willBeAliveInNextGeneration(this, c))
                 .forEach(newBoard::add);
         // save last generation
