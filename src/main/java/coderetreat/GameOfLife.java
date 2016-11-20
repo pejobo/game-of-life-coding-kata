@@ -103,7 +103,7 @@ public class GameOfLife<T extends Coordinate<T>> {
         final Set<Coordinate<T>> newWorld = _previousWorld;
         newWorld.clear();
         // already checked (dead) cells
-        final Set<Coordinate<T>> cellsChecked = new HashSet<>(_previousWorld.size() * 6);
+        final Set<Coordinate<T>> cellsChecked = new HashSet<>(_previousWorld.size() * 3);
         // add surviving cells to new world
         getLivingCells()
                 .filter(this::willBeAliveInNextGeneration)
