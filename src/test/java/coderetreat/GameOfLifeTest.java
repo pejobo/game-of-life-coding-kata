@@ -32,7 +32,7 @@ public class GameOfLifeTest {
     public void empty_board() {
         assertThat(_game.getLivingCells().count())
                 .isEqualTo(0);
-        _game.tic();
+        _game.tick();
         assertThat(_game.getLivingCells().count())
                 .isEqualTo(0);
         assertThat(_game.isStatic())
@@ -54,7 +54,7 @@ public class GameOfLifeTest {
                 "##\n" +
                 "##\n";
         Point2D.parse(twoByTwoBlock).forEach(_game::setAlive);
-        _game.tic(50);
+        _game.tick(50);
         assertThat(_game.isStatic())
                 .isTrue();
         assertThat(_game.calculatePeriod(10))
@@ -88,7 +88,7 @@ public class GameOfLifeTest {
     @Test
     public void tic_blinker() {
         Point2D.parse(BLINKER).forEach(_game::setAlive);
-        _game.tic();
+        _game.tick();
         assertThat(_game.getLivingCells().count()).isEqualTo(3);
         assertThat(_game.isAlive(at(0, 1))).isTrue();
         assertThat(_game.isAlive(at(1, 1))).isTrue();
@@ -118,7 +118,7 @@ public class GameOfLifeTest {
                 "  #\n" +
                 "###\n";
         Point2D.parse(glider).forEach(_game::setAlive);
-        _game.tic(ticCount);
+        _game.tick(ticCount);
         assertThat(_game.getLivingCells().count())
                 .isEqualTo(5);
         assertThat(_game.isStatic())
@@ -151,7 +151,7 @@ public class GameOfLifeTest {
     }
 
 
-    private void stressTest(int ticCount) {
+    private void stressTest(int numberOfGenerations) {
         final String s =
                 "### #\n" +
                 "#    \n" +
@@ -159,7 +159,7 @@ public class GameOfLifeTest {
                 " ## #\n" +
                 "# # #\n";
         Point2D.parse(s).forEach(_game::setAlive);
-        _game.tic(ticCount);
+        _game.tick(numberOfGenerations);
         System.out.println("number of living cells: " + _game.getNumberOfLivingCells());
         assertThat(_game.isStatic())
                 .describedAs("isStatic")
@@ -179,7 +179,7 @@ public class GameOfLifeTest {
     @Test
     public void calculate_period() {
         Point2D.parse("##########").forEach(_game::setAlive);
-        _game.tic(50);
+        _game.tick(50);
         assertThat(_game.calculatePeriod(50))
                 .isEqualTo(15);
     }

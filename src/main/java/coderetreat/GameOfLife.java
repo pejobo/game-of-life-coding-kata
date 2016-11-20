@@ -11,14 +11,14 @@ public class GameOfLife<T extends Coordinate<T>> {
 
     private Rules _rules;
     private Class<T> _coordinateType;
-    private Set<Coordinate<T>> _board;
-    private Set<Coordinate<T>> _previousBoard;
+    private Set<Coordinate<T>> _world;
+    private Set<Coordinate<T>> _previousWorld;
 
     GameOfLife(Rules rules, Class<T> coordinateType) {
         _rules = rules;
         _coordinateType = coordinateType;
-        _board = Collections.newSetFromMap(new ConcurrentHashMap<>());
-        _previousBoard = Collections.newSetFromMap(new ConcurrentHashMap<>());
+        _world = Collections.newSetFromMap(new ConcurrentHashMap<>());
+        _previousWorld = Collections.newSetFromMap(new ConcurrentHashMap<>());
     }
 
 
@@ -32,7 +32,7 @@ public class GameOfLife<T extends Coordinate<T>> {
     }
 
     public boolean isAlive(Coordinate<T> coordinate) {
-        return _board.contains(checkType(coordinate));
+        return _world.contains(checkType(coordinate));
     }
 
 
@@ -42,41 +42,41 @@ public class GameOfLife<T extends Coordinate<T>> {
 
 
     public void setAlive(Coordinate<T> coordinate) {
-        _board.add(checkType(coordinate));
+        _world.add(checkType(coordinate));
     }
 
 
     public Stream<Coordinate<T>> getLivingCells() {
-        return _board.stream();
+        return _world.stream();
     }
 
 
     public int getNumberOfLivingCells() {
-        return _board.size();
+        return _world.size();
     }
 
 
-    public void tic(int numberOfGenerations) {
+    public void tick(int numberOfGenerations) {
         for (int i = 0; i < numberOfGenerations; i++) {
-            tic();
+            tick();
         }
     }
 
 
     /**
      * Calculate the period of the configuration by advancing the world until a world identical
-     * to the current state is found or the specified maximum amount of tics is exceeded - whichever
+     * to the current state is found or the specified maximum amount of ticks is exceeded - whichever
      * comes first.
      *
-     * @param maxTics maximum number of tics
+     * @param maxTicks maximum number of ticks
      * @return {@code -1} if the configuration isn't periodic or the period is bigger than the
-     * specified {@code maxTics} value.
+     * specified {@code maxTicks} value.
      */
-    public int calculatePeriod(final int maxTics) {
-        final Set<Coordinate<T>> comparisonWorld = new HashSet<>(_board);
-        for (int i = 1; i <= maxTics; i++) {
-            tic();
-            if ((comparisonWorld.size() == _board.size()) && comparisonWorld.containsAll(_board)) {
+    public int calculatePeriod(final int maxTicks) {
+        final Set<Coordinate<T>> comparisonWorld = new HashSet<>(_world);
+        for (int i = 1; i <= maxTicks; i++) {
+            tick();
+            if ((comparisonWorld.size() == _world.size()) && comparisonWorld.containsAll(_world)) {
                 return i;
             }
         }
@@ -86,7 +86,7 @@ public class GameOfLife<T extends Coordinate<T>> {
 
     /**
      * Shortcut for {@code {@link #calculatePeriod(int) calculatePeriod(1)} == 1}.
-     * Side effect: Will advance the current world one '{@link #tic() tic}'.
+     * Side effect: Will advance the current world one '{@link #tick() tick}'.
      *
      * @return {@code true} when the current world is static.
      */
@@ -95,28 +95,30 @@ public class GameOfLife<T extends Coordinate<T>> {
     }
 
 
-    public void tic() {
+    public void tick() {
+        if (_world.isEmpty()) {
+            return;
+        }
         // reuse last generation
-        final Set<Coordinate<T>> newBoard = _previousBoard;
-        newBoard.clear();
+        final Set<Coordinate<T>> newWorld = _previousWorld;
+        newWorld.clear();
         // already checked (dead) cells
-        final Set<Coordinate<T>> alreadyChecked = new HashSet<>(Math.max(16, _previousBoard.size() * 4));
-        // surviving cells
+        final Set<Coordinate<T>> cellsChecked = new HashSet<>(_previousWorld.size() * 6);
+        // add surviving cells to new world
         getLivingCells()
                 .filter(this::willBeAliveInNextGeneration)
-                .forEach(newBoard::add);
-        // new-born cells
+                .forEach(newWorld::add);
+        // add new-born cells to new world
         getLivingCells()
                 .flatMap(Coordinate::getNeighbours)
                 .filter(this::isDead)
-                .filter(coordinate -> ! newBoard.contains(coordinate)) // prevent neighbour calculation for cells where is already known that they come to life
-                .filter(alreadyChecked::add) // prevent duplicate checking
+                .filter(cellsChecked::add) // prevent duplicate checking
                 .filter(c -> _rules.willBeAliveInNextGeneration(this, c))
-                .forEach(newBoard::add);
+                .forEach(newWorld::add);
         // save last generation
-        _previousBoard = _board;
+        _previousWorld = _world;
         // new generation
-        _board = newBoard;
+        _world = newWorld;
     }
 
 }
