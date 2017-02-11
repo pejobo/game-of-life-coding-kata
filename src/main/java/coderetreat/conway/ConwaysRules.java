@@ -1,22 +1,20 @@
 package coderetreat.conway;
 
-import coderetreat.Coordinate;
-import coderetreat.GameOfLife;
 import coderetreat.Rules;
+import coderetreat.World;
 
-@SuppressWarnings("SpellCheckingInspection")
-public class ConwaysRules implements Rules {
+public class ConwaysRules implements Rules<Point2D> {
 
     @Override
-    public <T extends Coordinate<T>> boolean willBeAliveInNextGeneration(GameOfLife<T> game, Coordinate<T> coordinate) {
+    public boolean willBeAliveInNextGeneration(World<Point2D> world, Point2D point) {
         final long livingCells =
-                coordinate
+                point
                 .getNeighbours()
-                .filter(game::isAlive)
+                .filter(world::isAlive)
                 .limit(4) // if there are already 4 known new cells there is no advantage in collecting more..
                 .count();
         // some clever boolean logic here ;)
-        return (livingCells == 3) || ((livingCells == 2) && game.isAlive(coordinate));
+        return (livingCells == 3) || ((livingCells == 2) && world.isAlive(point));
     }
 
 }

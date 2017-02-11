@@ -1,58 +1,45 @@
 package coderetreat;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 @SuppressWarnings("WeakerAccess")
 public class GameOfLife<T extends Coordinate<T>> {
 
-    private Rules _rules;
+    private Rules<T> _rules;
     private Class<T> _coordinateType;
-    private Set<Coordinate<T>> _world;
-    private Set<Coordinate<T>> _previousWorld;
+    private World<T> _world;
+    private World<T> _previousWorld;
 
-    GameOfLife(Rules rules, Class<T> coordinateType) {
+    GameOfLife(Class<T> coordinateType, Rules<T> rules, World<T> initialWorld) {
         _rules = rules;
         _coordinateType = coordinateType;
-        _world = Collections.newSetFromMap(new ConcurrentHashMap<>());
-        _previousWorld = Collections.newSetFromMap(new ConcurrentHashMap<>());
+        _world = initialWorld;
+        _previousWorld = _world.clone();
     }
 
 
-    private Coordinate<T> checkType(Coordinate<T> coordinate) {
+    private T checkType(T coordinate) {
         return _coordinateType.cast(coordinate);
     }
 
 
-    public boolean willBeAliveInNextGeneration(Coordinate<T> coordinate) {
-        return _rules.willBeAliveInNextGeneration(this, checkType(coordinate));
-    }
-
-    public boolean isAlive(Coordinate<T> coordinate) {
-        return _world.contains(checkType(coordinate));
+    public void setCellAlive(T coordinate) {
+        _world.setCellAlive(checkType(coordinate));
     }
 
 
-    public boolean isDead(Coordinate<T> coordinate) {
-        return ! isAlive(checkType(coordinate));
+    public boolean isAlive(T coordinate) {
+        return _world.isAlive(coordinate);
     }
 
 
-    public void setAlive(Coordinate<T> coordinate) {
-        _world.add(checkType(coordinate));
+    public Stream<T> getLivingCells() {
+        return _world.getLivingCells();
     }
 
 
-    public Stream<Coordinate<T>> getLivingCells() {
-        return _world.stream();
-    }
-
-
-    public int getNumberOfLivingCells() {
-        return _world.size();
+    public long getNumberOfLivingCells() {
+        return _world.getNumberOfLivingCells();
     }
 
 
@@ -73,10 +60,10 @@ public class GameOfLife<T extends Coordinate<T>> {
      * specified {@code maxTicks} value.
      */
     public int calculatePeriod(final int maxTicks) {
-        final Set<Coordinate<T>> comparisonWorld = new HashSet<>(_world);
+        World<T> world = _world.clone();
         for (int i = 1; i <= maxTicks; i++) {
-            tick();
-            if ((comparisonWorld.size() == _world.size()) && comparisonWorld.containsAll(_world)) {
+            world = world.tick(_rules);
+            if (world.isIdenticalTo(_world)) {
                 return i;
             }
         }
@@ -99,25 +86,9 @@ public class GameOfLife<T extends Coordinate<T>> {
         if (_world.isEmpty()) {
             return;
         }
-        // reuse last generation
-        final Set<Coordinate<T>> newWorld = _previousWorld;
-        newWorld.clear();
-        // already checked (dead) cells
-        final Set<Coordinate<T>> cellsChecked = new HashSet<>(_previousWorld.size() * 3);
-        // add surviving cells to new world
-        getLivingCells()
-                .filter(this::willBeAliveInNextGeneration)
-                .forEach(newWorld::add);
-        // add new-born cells to new world
-        getLivingCells()
-                .flatMap(Coordinate::getNeighbours)
-                .filter(this::isDead)
-                .filter(cellsChecked::add) // prevent duplicate checking
-                .filter(c -> _rules.willBeAliveInNextGeneration(this, c))
-                .forEach(newWorld::add);
-        // save last generation
+        _world.tick(_rules, _previousWorld);
+        final World<T> newWorld = _previousWorld;
         _previousWorld = _world;
-        // new generation
         _world = newWorld;
     }
 

@@ -1,7 +1,7 @@
 package coderetreat;
 
-public interface Rules {
+public interface Rules<T extends Coordinate<T>> {
 
-    <T extends Coordinate<T>> boolean willBeAliveInNextGeneration(GameOfLife<T> game, Coordinate<T> coordinate);
+    boolean willBeAliveInNextGeneration(World<T> world, T coordinate);
 
 }

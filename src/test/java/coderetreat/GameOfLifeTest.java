@@ -19,12 +19,14 @@ public class GameOfLifeTest {
             " # \n";
 
     private GameOfLife<Point2D> _game;
-    private Rules _rules;
+    private World<Point2D> _world;
+    private Rules<Point2D> _rules;
 
     @Before
     public void setUp() throws Exception {
         _rules = new ConwaysRules();
-        _game = new GameOfLife<>(_rules, Point2D.class);
+        _world = new WorldImpl<>();
+        _game = new GameOfLife<>(Point2D.class, _rules, _world);
     }
 
 
@@ -53,7 +55,7 @@ public class GameOfLifeTest {
         final String twoByTwoBlock =
                 "##\n" +
                 "##\n";
-        Point2D.parse(twoByTwoBlock).forEach(_game::setAlive);
+        Point2D.parse(twoByTwoBlock).forEach(_game::setCellAlive);
         _game.tick(50);
         assertThat(_game.isStatic())
                 .isTrue();
@@ -72,22 +74,22 @@ public class GameOfLifeTest {
 
     @Test
     public void blinker() {
-        Point2D.parse(BLINKER).forEach(_game::setAlive);
-        assertThat(_rules.willBeAliveInNextGeneration(_game, at(0, 0))).isFalse();
-        assertThat(_rules.willBeAliveInNextGeneration(_game, at(1, 0))).isFalse();
-        assertThat(_rules.willBeAliveInNextGeneration(_game, at(2, 0))).isFalse();
-        assertThat(_rules.willBeAliveInNextGeneration(_game, at(0, 1))).isTrue();
-        assertThat(_rules.willBeAliveInNextGeneration(_game, at(1, 1))).isTrue();
-        assertThat(_rules.willBeAliveInNextGeneration(_game, at(2, 1))).isTrue();
-        assertThat(_rules.willBeAliveInNextGeneration(_game, at(0, 2))).isFalse();
-        assertThat(_rules.willBeAliveInNextGeneration(_game, at(1, 2))).isFalse();
-        assertThat(_rules.willBeAliveInNextGeneration(_game, at(2, 2))).isFalse();
+        Point2D.parse(BLINKER).forEach(_world::setCellAlive);
+        assertThat(_rules.willBeAliveInNextGeneration(_world, at(0, 0))).isFalse();
+        assertThat(_rules.willBeAliveInNextGeneration(_world, at(1, 0))).isFalse();
+        assertThat(_rules.willBeAliveInNextGeneration(_world, at(2, 0))).isFalse();
+        assertThat(_rules.willBeAliveInNextGeneration(_world, at(0, 1))).isTrue();
+        assertThat(_rules.willBeAliveInNextGeneration(_world, at(1, 1))).isTrue();
+        assertThat(_rules.willBeAliveInNextGeneration(_world, at(2, 1))).isTrue();
+        assertThat(_rules.willBeAliveInNextGeneration(_world, at(0, 2))).isFalse();
+        assertThat(_rules.willBeAliveInNextGeneration(_world, at(1, 2))).isFalse();
+        assertThat(_rules.willBeAliveInNextGeneration(_world, at(2, 2))).isFalse();
     }
 
 
     @Test
     public void tic_blinker() {
-        Point2D.parse(BLINKER).forEach(_game::setAlive);
+        Point2D.parse(BLINKER).forEach(_game::setCellAlive);
         _game.tick();
         assertThat(_game.getLivingCells().count()).isEqualTo(3);
         assertThat(_game.isAlive(at(0, 1))).isTrue();
@@ -98,7 +100,7 @@ public class GameOfLifeTest {
 
     @Test
     public void blinker_period() {
-        Point2D.parse(BLINKER).forEach(_game::setAlive);
+        Point2D.parse(BLINKER).forEach(_game::setCellAlive);
         assertThat(_game.calculatePeriod(10)).isEqualTo(2);
     }
 
@@ -117,7 +119,7 @@ public class GameOfLifeTest {
                 " # \n" +
                 "  #\n" +
                 "###\n";
-        Point2D.parse(glider).forEach(_game::setAlive);
+        Point2D.parse(glider).forEach(_game::setCellAlive);
         _game.tick(ticCount);
         assertThat(_game.getLivingCells().count())
                 .isEqualTo(5);
@@ -158,7 +160,7 @@ public class GameOfLifeTest {
                 "   ##\n" +
                 " ## #\n" +
                 "# # #\n";
-        Point2D.parse(s).forEach(_game::setAlive);
+        Point2D.parse(s).forEach(_game::setCellAlive);
         _game.tick(numberOfGenerations);
         System.out.println("number of living cells: " + _game.getNumberOfLivingCells());
         assertThat(_game.isStatic())
@@ -178,7 +180,7 @@ public class GameOfLifeTest {
 
     @Test
     public void calculate_period() {
-        Point2D.parse("##########").forEach(_game::setAlive);
+        Point2D.parse("##########").forEach(_game::setCellAlive);
         _game.tick(50);
         assertThat(_game.calculatePeriod(50))
                 .isEqualTo(15);
