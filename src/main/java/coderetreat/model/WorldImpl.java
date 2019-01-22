@@ -1,4 +1,4 @@
-package coderetreat;
+package coderetreat.model;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -11,7 +11,7 @@ public class WorldImpl<T extends Coordinate<T>> implements World<T> {
 
     private final Set<T> _livingCells;
 
-    WorldImpl() {
+    public WorldImpl() {
         this(Collections.newSetFromMap(new ConcurrentHashMap<>()));
     }
 
@@ -22,7 +22,7 @@ public class WorldImpl<T extends Coordinate<T>> implements World<T> {
     @Override
     @SuppressWarnings("MethodDoesntCallSuperMethod")
     public World<T> clone() {
-        final Set<T> livingCells = Collections.newSetFromMap(new ConcurrentHashMap<T, Boolean>(_livingCells.size()));
+        final Set<T> livingCells = Collections.newSetFromMap(new ConcurrentHashMap<>(_livingCells.size()));
         livingCells.addAll(_livingCells);
         return new WorldImpl<>(livingCells);
     }

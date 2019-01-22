@@ -1,7 +1,7 @@
 package coderetreat.conway;
 
-import coderetreat.Rules;
-import coderetreat.World;
+import coderetreat.model.Rules;
+import coderetreat.model.World;
 
 public class ConwaysRules implements Rules<Point2D> {
 

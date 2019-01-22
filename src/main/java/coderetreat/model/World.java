@@ -1,4 +1,4 @@
-package coderetreat;
+package coderetreat.model;
 
 import org.jetbrains.annotations.NotNull;
 

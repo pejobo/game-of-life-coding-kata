@@ -2,6 +2,11 @@ package coderetreat;
 
 import coderetreat.conway.ConwaysRules;
 import coderetreat.conway.Point2D;
+import coderetreat.model.GameOfLifeState;
+import coderetreat.model.Rules;
+import coderetreat.model.World;
+import coderetreat.model.WorldImpl;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -11,14 +16,14 @@ import java.util.stream.Collectors;
 import static coderetreat.conway.Point2D.at;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class GameOfLifeTest {
+public class GameOfLifeStateTest {
 
     private static final String BLINKER =
             " # \n" +
             " # \n" +
             " # \n";
 
-    private GameOfLife<Point2D> _game;
+    private GameOfLifeState<Point2D> _game;
     private World<Point2D> _world;
     private Rules<Point2D> _rules;
 
@@ -26,7 +31,7 @@ public class GameOfLifeTest {
     public void setUp() throws Exception {
         _rules = new ConwaysRules();
         _world = new WorldImpl<>();
-        _game = new GameOfLife<>(Point2D.class, _rules, _world);
+        _game = new GameOfLifeState<>(Point2D.class, _rules, _world);
     }
 
 

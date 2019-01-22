@@ -1,4 +1,4 @@
-package coderetreat;
+package coderetreat.model;
 
 public interface Rules<T extends Coordinate<T>> {
 

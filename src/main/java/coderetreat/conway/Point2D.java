@@ -1,6 +1,6 @@
 package coderetreat.conway;
 
-import coderetreat.Coordinate;
+import coderetreat.model.Coordinate;
 
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -78,6 +78,13 @@ public class Point2D implements Coordinate<Point2D> {
         return "point2d{" + _x + ',' + _y + '}';
     }
 
+    public int getX() {
+        return _x;
+    }
+
+    public int getY() {
+        return _y;
+    }
 
     private enum NeighbourHood {
 

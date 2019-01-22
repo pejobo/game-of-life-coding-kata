@@ -1,16 +1,16 @@
-package coderetreat;
+package coderetreat.model;
 
 import java.util.stream.Stream;
 
 @SuppressWarnings("WeakerAccess")
-public class GameOfLife<T extends Coordinate<T>> {
+public class GameOfLifeState<T extends Coordinate<T>> {
 
     private Rules<T> _rules;
     private Class<T> _coordinateType;
     private World<T> _world;
     private World<T> _previousWorld;
 
-    GameOfLife(Class<T> coordinateType, Rules<T> rules, World<T> initialWorld) {
+    public GameOfLifeState(Class<T> coordinateType, Rules<T> rules, World<T> initialWorld) {
         _rules = rules;
         _coordinateType = coordinateType;
         _world = initialWorld;
