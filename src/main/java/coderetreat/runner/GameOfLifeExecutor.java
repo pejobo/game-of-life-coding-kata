@@ -2,7 +2,7 @@ package coderetreat.runner;
 
 import coderetreat.view.GameOfLifeRenderer;
 
-public class GameOfLiveExecutor {
+public class GameOfLifeExecutor {
 
     public static void main(String[] args) {
         GameOfLife game = new GameOfLife();
