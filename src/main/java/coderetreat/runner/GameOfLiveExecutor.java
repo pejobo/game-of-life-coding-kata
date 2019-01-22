@@ -6,7 +6,7 @@ public class GameOfLiveExecutor {
 
     public static void main(String[] args) {
         GameOfLife game = new GameOfLife();
-        GameOfLifeRenderer renderer = new GameOfLifeRenderer(2000, 100, game);
+        GameOfLifeRenderer renderer = new GameOfLifeRenderer(200, 200, game, 2);
 
         while (!game.hasFinished()) {
             renderer.render();

@@ -6,59 +6,50 @@ import javax.swing.*;
 public class GameOfLifeRenderer {
     private final RendererContainerFrame rendererContainerFrame;
     private final WorldState worldState;
+    private final int scaleFactor;
 
-    private long lastRendered;
     private Color backgroundColor;
     private Color foregroundColor;
-    private long delta;
 
     /**
-     * Use this to generate
-     * @param width blabla
-     * @param height ba
-     * @param worldState bawd
+     * Creates a renderer, which instantiates a game of life rendering frame.
+     * @param width of the rendering component (in pixel)
+     * @param height of the rendering component (in pixel)
+     * @param worldState - an implementation of the {@link coderetreat.view.WorldState}
+     * @param scaleFactor - the scale factor of the rendering component (1 is default)
      */
-    public GameOfLifeRenderer(int width, int height, WorldState worldState) {
+    public GameOfLifeRenderer(int width, int height, WorldState worldState, int scaleFactor) {
         backgroundColor = Color.GRAY;
         foregroundColor = Color.CYAN;
-        lastRendered = System.currentTimeMillis();
-        delta = 0;
+        this.scaleFactor = scaleFactor;
         rendererContainerFrame = new RendererContainerFrame(width, height);
         this.worldState = worldState;
     }
 
+    /**
+     * Call this method to draw the current state of the given {@link coderetreat.view.WorldState}
+     */
     public void render() {
         if (worldState == null) {
             throw new IllegalStateException("The worldstate is null, please set a valid worldstate.");
         }
         rendererContainerFrame.repaint();
-        updateDelta();
     }
 
-    private void updateDelta() {
-        long now = System.currentTimeMillis();
-        delta = now - lastRendered;
-        lastRendered = System.currentTimeMillis();
-    }
-
-    public Color getBackgroundColor() {
-        return backgroundColor;
-    }
-
+    /**
+     * Sets the background color. (Default color is Color.GRAY)
+     * @param backgroundColor
+     */
     public void setBackgroundColor(Color backgroundColor) {
         this.backgroundColor = backgroundColor;
     }
 
-    public Color getForegroundColor() {
-        return foregroundColor;
-    }
-
+    /**
+     * Sets the foreground color. (Default color is Color.CYAN)
+     * @param foregroundColor
+     */
     public void setForegroundColor(Color foregroundColor) {
         this.foregroundColor = foregroundColor;
-    }
-
-    public long getDelta() {
-        return delta;
     }
 
     private class RendererContainerFrame {
@@ -80,16 +71,21 @@ public class GameOfLifeRenderer {
     private class GameOfLifeRenderingComponent extends JPanel {
         @Override
         protected void paintComponent(Graphics graphics){
-            super.paintComponent(graphics);
+            if (backgroundColor == null) {
+                throw new IllegalStateException("BackgroundColor may not be null. Call setBackgroundColor with a valid parameter!");
+            }
+            if (foregroundColor == null) {
+                throw new IllegalStateException("ForegroundColor may not be null. Call setForegroundColor with a valid parameter!");
+            }
             graphics.setColor(backgroundColor);
+            super.paintComponent(graphics);
             graphics.fillRect(0, 0, getWidth(), getHeight());
             graphics.setColor(foregroundColor);
             worldState.getCells().stream().filter(Cell::isAlive).forEach(cell -> drawCell(graphics, cell));
         }
 
         private void drawCell(Graphics graphics, Cell cell) {
-            graphics.fillRect(cell.getX(), cell.getY(), cell.getX()+1, cell.getY()+1
-            );
+            graphics.fillRect(cell.getX()*scaleFactor, cell.getY()*scaleFactor, scaleFactor, scaleFactor);
         }
     }
 }
