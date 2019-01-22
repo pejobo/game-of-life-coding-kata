@@ -53,11 +53,9 @@ public class GameOfLife implements WorldState {
     }
 
     private static void initializeWorld(GameOfLifeState<Point2D> gameOfLife) {
-        Point2D coordinate1 = Point2D.at(50, 50);
-        gameOfLife.setCellAlive(coordinate1);
-        Point2D coordinate2 = Point2D.at(50, 51);
-        gameOfLife.setCellAlive(coordinate2);
-        Point2D coordinate3 = Point2D.at(50, 52);
-        gameOfLife.setCellAlive(coordinate3);
+        //adds a blinker at 20:20
+        gameOfLife.setCellAlive(Point2D.at(20, 20));
+        gameOfLife.setCellAlive(Point2D.at(20, 21));
+        gameOfLife.setCellAlive(Point2D.at(20, 22));
     }
 }
