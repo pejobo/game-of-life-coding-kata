@@ -15,14 +15,14 @@ public class GameOfLifeRenderer {
      * Creates a renderer, which instantiates a game of life rendering frame.
      * @param width of the rendering component (in pixel)
      * @param height of the rendering component (in pixel)
-     * @param worldState - an implementation of the {@link coderetreat.view.WorldState}
+     * @param worldState - an implementation of the {@link WorldState}
      * @param scaleFactor - the scale factor of the rendering component (1 is default)
      */
     public GameOfLifeRenderer(int width, int height, WorldState worldState, int scaleFactor) {
         backgroundColor = Color.GRAY;
         foregroundColor = Color.CYAN;
         this.scaleFactor = scaleFactor;
-        rendererContainerFrame = new RendererContainerFrame(width, height);
+        rendererContainerFrame = new RendererContainerFrame(width * scaleFactor, height * scaleFactor);
         this.worldState = worldState;
     }
 
